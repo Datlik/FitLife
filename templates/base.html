@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FitLife{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="{% if not current_user.is_authenticated %}guest-mode{% endif %}">
+
+    <aside class="sidebar">
+        <div class="brand">Fit<span class="accent">Life</span></div>
+        
+        <nav class="nav-menu">
+            <a href="{{ url_for('index') }}" class="nav-item {% if request.endpoint == 'index' %}active{% endif %}">
+                Domů
+            </a>
+            {% if current_user.is_authenticated %}
+                <a href="/cviky#vse" class="nav-item {% if 'cviky' in request.endpoint %}active{% endif %}">Cviky</a>
+                <a href="/sablony#vse" class="nav-item {% if 'sablony' in request.endpoint %}active{% endif %}">Šablony</a>
+                <a href="/trenink" class="nav-item {% if 'trenink' in request.endpoint %}active{% endif %}">Trénink</a>
+                <a href="/historie" class="nav-item {% if 'historie' in request.endpoint %}active{% endif %}">Historie</a>
+                <a href="/statistiky" class="nav-item {% if 'statistiky' in request.endpoint %}active{% endif %}">Statistiky</a>
+            {% endif %}
+        </nav>
+
+        {% if not current_user.is_authenticated %}
+        <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px;">
+            <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-full">Přihlásit</a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-full">Registrovat</a>
+        </div>
+        {% endif %}
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <h2>{% block page_title %}Přehled{% endblock %}</h2>
+            <div class="topbar-actions">
+                {% block topbar_actions %}{% endblock %}
+            </div>
+        </header>
+
+        <main class="content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-container">
+                        {% for category, message in messages %}
+                            <div class="flash flash-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+
+    {% if current_user.is_authenticated %}
+   <aside class="profile-sidebar">
+    <div class="profile-header">
+        <div class="profile-avatar">
+            {{ current_user.email[0] | upper }} </div>
+        <h3 class="profile-name">{{ current_user.email.split('@')[0] }}</h3>
+        <span class="profile-role" style="margin-bottom: 8px;">Člen</span>
+        
+        {% if workout_streak > 0 %}
+        <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.4); color: #f59e0b; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 0.85rem; box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);">
+            {{ get_icon('fire.svg') | safe }}
+            {{ workout_streak }} Týdnů v řadě
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="heatmap-widget" style="margin-top: 16px;">
+        <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px; text-transform: uppercase;">Aktivita za 7 dní</span>
+        <div class="heatmap-container" style="display: flex; gap: 6px; align-items: center;">
+            {% for day in heatmap_data %}
+                <div class="heatmap-box {% if day.active %}active{% endif %}" title="{{ day.label }}"></div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <hr class="separator">
+
+    <div class="profile-stats">
+        <div class="stat-item">
+            <span class="stat-value">{{ weekly_workouts }}</span>
+            <span class="stat-label">Tréninky / Týden</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">{{ total_sets }}</span>
+            <span class="stat-label">Série celkem</span>
+        </div>
+    </div>
+
+    <hr class="separator">
+
+    <div class="recent-workouts">
+        <h4>Poslední trénink</h4>
+        
+        {% for w in recent_workouts %}
+        <div class="mini-card">
+            <strong>Silový trénink</strong>
+            <span class="text-muted">{{ w.end_time.strftime('%d. %m. %H:%M') }}</span>
+        </div>
+        {% else %}
+        <p class="text-muted">Zatím žádné tréninky.</p>
+        {% endfor %}
+    </div>
+
+    <div class="profile-actions" style="margin-top: auto;">
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline btn-full" style="margin-top: 10px; color: #ef4444; border-color: #442222;">Odhlásit se</a>
+        <form method="POST" action="{{ url_for('auth.delete_account') }}" onsubmit="return confirm('Opravdu chceš trvale smazat svůj účet? Tato akce je nevratná.');" style="margin-top: 10px;">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-danger btn-full">Smazat účet</button>
+        </form>
+    </div>
+</aside>
+    {% endif %}
+    
+
+</body>
+</html>

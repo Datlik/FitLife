@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard – FitLife{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+
+    <div class="card hero-card card-interactive">
+        <div class="hero-text">
+            {% if current_user.is_authenticated %}
+            <h1>Připraven<br>na <span style="color: #ffffff; text-shadow: 0 2px 10px rgba(0,0,0,0.1);">trénink?</span>
+            </h1>
+            <p>Tvůj poslední trénink byl včera. Udrž si momentum a pokračuj v cestě za svými cíli.</p>
+            {% else %}
+            <h1>Vítej ve<br><span style="color: #ffffff; text-shadow: 0 2px 10px rgba(0,0,0,0.1);">FitLife</span></h1>
+            <p>Profesionální nástroj pro sledování tvých silových tréninků. Čistý design, žádné rozptylování.</p>
+            {% endif %}
+        </div>
+
+        <div class="hero-action">
+            {% if current_user.is_authenticated %}
+            <a href="/trenink" class="btn"
+                style="background-color: #111111; color: #ffffff; padding: 20px 40px; font-size: 1.1rem; border-radius: var(--radius-pill); box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+                Začít trénink
+            </a>
+            {% else %}
+            <a href="{{ url_for('auth.register') }}" class="btn"
+                style="background-color: #111111; color: #ffffff; padding: 20px 40px; font-size: 1.1rem; border-radius: var(--radius-pill); box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+                Vytvořit účet zdarma
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="card stat-card card-interactive">
+            <span class="stat-label">Cviky k dispozici</span>
+            <span class="stat-value">{{ total_exercises }}</span>
+            <span style="color: var(--text-muted); font-size: 0.85rem; margin-top: auto;">
+                {% if current_user.is_authenticated and my_exercises_count > 0 %}
+                Z toho {{ my_exercises_count }} tvých vlastních
+                {% else %}
+                Předdefinováno od admina
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="card stat-card card-interactive card-lavender">
+            <span class="stat-label">Moje šablony</span>
+            <span class="stat-value">{% if current_user.is_authenticated %}{{ templates_count }}{% else %}-{% endif
+                %}</span>
+            <span class="text-muted" style="font-size: 0.85rem; margin-top: auto;">Vlastní plány</span>
+        </div>
+
+        <div class="card stat-card card-interactive">
+            <span class="stat-label">Tréninky celkem</span>
+            <span class="stat-value">{% if current_user.is_authenticated %}{{ workouts_count }}{% else %}-{% endif
+                %}</span>
+            <span class="text-muted" style="font-size: 0.85rem; margin-top: auto;">Dokončeno</span>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

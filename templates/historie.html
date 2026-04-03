@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Historie – FitLife{% endblock %}
+{% block page_title %}Historie tréninků{% endblock %}
+
+{% block topbar_actions %}
+    {% if detail_mode %}
+        <a href="{{ url_for('historie.index') }}" class="btn btn-outline">← Zpět na přehled</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+{% if not detail_mode %}
+    <div class="exercises-grid">
+        {% for w in workouts %}
+        <div class="card card-interactive" style="display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                <h3 class="card-title" style="margin: 0; font-size: 1.3rem;">{{ w.end_time.strftime('%d. %m. %Y') }}</h3>
+                <span class="badge badge-purple">⏱ {{ w.duration }} min</span>
+            </div>
+            
+            <p class="text-muted" style="margin-bottom: 8px;">Celkový objem: <strong style="color: var(--text-main);">{{ w.total_volume }} kg</strong></p>
+            <p class="text-muted" style="margin-bottom: 24px;">Celkem sérií: <strong style="color: var(--text-main);">{{ stats[w.id] }}</strong></p>
+
+            <div style="display: flex; gap: 12px; margin-top: auto;">
+                <a href="{{ url_for('historie.detail', workout_id=w.id) }}" class="btn btn-primary" style="flex: 1; text-align: center;">Detail tréninku</a>
+                
+                <form action="{{ url_for('historie.smazat', workout_id=w.id) }}" method="POST" onsubmit="return confirm('Opravdu chceš smazat tento trénink z historie?');">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-outline" style="border-color: #ef4444; color: #ef4444;" title="Smazat trénink">✕</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+            <div class="card" style="text-align: center; padding: 40px; border-style: dashed; grid-column: 1 / -1;">
+                <p class="text-muted" style="margin-bottom: 16px;">Tvoje historie je zatím prázdná. Je čas zvednout nějaké železo!</p>
+                <a href="/trenink" class="btn btn-primary">Přejít na trénink</a>
+            </div>
+        {% endfor %}
+    </div>
+
+{% else %}
+    <div class="card" style="border-color: var(--accent); margin-bottom: 24px; background-color: rgba(139, 92, 246, 0.05);">
+        <h2 style="color: var(--accent); margin-bottom: 16px;">Shrnutí tréninku</h2>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+            <span class="badge badge-gray" style="font-size: 1rem;">{{ workout.end_time.strftime('%d. %m. %Y (%H:%M)') }}</span>
+            <span class="badge badge-gray" style="font-size: 1rem;">Délka: {{ workout.duration }} min</span>
+            <span class="badge badge-gray" style="font-size: 1rem;">bjem: {{ workout.total_volume }} kg</span>
+        </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+        {% for ex, sets in exercises.items() %}
+        <div class="card">
+            <h3 style="color: var(--text-main); font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">{{ ex.name }}</h3>
+            
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                    <thead>
+                        <tr style="color: var(--text-muted); font-size: 0.85rem; border-bottom: 1px solid var(--border);">
+                            <th style="padding: 12px 8px;">Série</th>
+                            <th style="padding: 12px 8px;">Váha</th>
+                            <th style="padding: 12px 8px;">Opakování</th>
+                            <th style="padding: 12px 8px;">Intenzita</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in sets %}
+                        <tr style="border-bottom: 1px solid var(--border-light); background-color: {% if loop.index % 2 == 0 %}var(--bg-card){% else %}transparent{% endif %};">
+                            <td style="padding: 12px 8px; font-weight: bold; color: var(--accent);">{{ loop.index }}.</td>
+                            <td style="padding: 12px 8px; font-size: 1.1rem;">{{ s.weight }} kg</td>
+                            <td style="padding: 12px 8px; font-size: 1.1rem;">{{ s.reps }}</td>
+                            <td style="padding: 12px 8px;"><span class="badge badge-gray">Úroveň {{ s.intensity }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}

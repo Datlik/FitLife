@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Registrace – FitLife{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <h2 class="auth-title">Registrace</h2>
+
+        {% if error %}
+            <div class="alert alert-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('auth.register') }}" class="auth-form">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-group">
+                <label for="email" class="form-label">E-mail</label>
+                <input type="email" id="email" name="email" class="form-input"
+                       placeholder="vas@email.cz" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Heslo</label>
+                <input type="password" id="password" name="password" class="form-input"
+                       placeholder="Minimálně 8 znaků" required>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password" class="form-label">Potvrzení hesla</label>
+                <input type="password" id="confirm_password" name="confirm_password"
+                       class="form-input" placeholder="Zopakuj heslo" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">Vytvořit účet</button>
+        </form>
+
+        <p class="auth-switch">
+            Už máš účet? <a href="{{ url_for('auth.login') }}">Přihlás se</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

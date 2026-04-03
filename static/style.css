@@ -1,0 +1,932 @@
+/* =============================================
+   FITLIFE – Premium Desktop Gym App
+   Theme: Pure Dark & Purple
+   ============================================= */
+
+:root {
+    /* Colors - Neo Bento Design */
+    --bg-app: #111111;
+    /* Temná šedá, nedávat absolutní černou */
+    --bg-surface: #111111;
+    --bg-card: #1C1C1E;
+    /* Tmavé karty, Bento bloky */
+    --bg-input: #2C2C2E;
+
+    --border: rgba(255, 255, 255, 0.05);
+    /* Skoro neviditelné ohraničení */
+    --border-light: rgba(255, 255, 255, 0.1);
+
+    --text-main: #ffffff;
+    --text-muted: #8a8a8e;
+    /* Specifická stříbrno-šedá jako u iOS */
+
+    --accent: #D4F670;
+    /* Neon Limetková */
+    --accent-hover: #C6E663;
+    --accent-dark: #000000;
+    /* Pro text na limetkových tlačítkách */
+
+    --secondary: #D7BCFA;
+    /* Levandulová */
+
+    /* Layout */
+    --header-h: 80px;
+    --content-max: 1100px;
+    --sidebar-w: 240px;
+    --profile-sidebar-w: 300px;
+
+    /* Shapes - Extrémní Bento křivky */
+    --radius-sm: 16px;
+    --radius-md: 24px;
+    --radius-lg: 32px;
+    --radius-pill: 100px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+/* === RESET & TYPOGRAPHY === */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    font-family: system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    line-height: 1.5;
+}
+
+a {
+    color: var(--text-main);
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+/* === APP LAYOUT === */
+.sidebar {
+    width: var(--sidebar-w);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: var(--bg-app);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 32px 24px;
+    z-index: 100;
+}
+
+.profile-sidebar {
+    width: var(--profile-sidebar-w);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: var(--bg-app);
+    border-left: 1px solid var(--border);
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    z-index: 100;
+    overflow-y: auto;
+}
+
+.main-wrapper {
+    margin-left: var(--sidebar-w);
+    margin-right: var(--profile-sidebar-w);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--bg-surface);
+    transition: margin-right 0.3s ease;
+}
+
+/* Skrytí pravého panelu pro nepřihlášené uživatele */
+body.guest-mode .main-wrapper {
+    margin-right: 0;
+}
+
+body.guest-mode .profile-sidebar {
+    display: none;
+}
+
+.topbar {
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    border-bottom: 1px solid var(--border);
+    background-color: var(--bg-app);
+    position: sticky;
+    top: 0;
+    z-index: 90;
+}
+
+.content {
+    max-width: var(--content-max);
+    width: 100%;
+    margin: 0 auto;
+    padding: 40px;
+    flex: 1;
+}
+
+/* === SIDEBAR (LEFT) COMPONENTS === */
+.brand {
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 48px;
+    padding-left: 16px;
+}
+
+.brand .accent {
+    color: var(--accent);
+}
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 14px 20px;
+    border-radius: var(--radius-pill);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-muted);
+}
+
+.nav-item:hover {
+    color: var(--text-main);
+    background-color: var(--bg-input);
+}
+
+.nav-item.active {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* === PROFILE SIDEBAR (RIGHT) COMPONENTS === */
+.profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--bg-input);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--text-muted);
+    position: relative;
+}
+
+/* Puntík indikující online status */
+.profile-avatar::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 16px;
+    height: 16px;
+    background-color: var(--accent);
+    border: 3px solid var(--bg-app);
+    border-radius: 50%;
+}
+
+.profile-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    word-break: break-all;
+}
+
+.profile-role {
+    font-size: 0.8rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+/* Activity Heatmap */
+.heatmap-box {
+    flex: 1; /* Roztáhne boxíky rovnoměrně na šířku kontejneru */
+    aspect-ratio: 1 / 1; /* Udrží je čtvercové */
+    max-width: 22px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s;
+    cursor: help;
+}
+.heatmap-box:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+.heatmap-box.active {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 8px rgba(142, 225, 34, 0.5);
+}
+
+.profile-stats-mini {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 0;
+}
+
+.stat-mini {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.stat-mini-val {
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.stat-mini-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.profile-widget h3 {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+}
+
+.activity-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.activity-item .date {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+}
+
+/* === CARDS === */
+.card {
+    background-color: var(--bg-card);
+    border: none;
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    transition: all 0.2s;
+}
+
+.card-interactive:hover {
+    background-color: #242426;
+    transform: translateY(-2px);
+}
+
+.card-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+/* Bento variace barev */
+.card-lime {
+    background-color: var(--accent);
+    color: #000000;
+}
+
+.card-lime .card-title,
+.card-lime .text-muted {
+    color: #000000;
+}
+
+.card-lavender {
+    background-color: var(--secondary);
+    color: #000000;
+}
+
+.card-lavender .card-title,
+.card-lavender .text-muted {
+    color: #000000;
+}
+
+/* === BUTTONS === */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 24px;
+    border-radius: var(--radius-pill);
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary {
+    background-color: var(--accent);
+    color: var(--accent-dark);
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-hover);
+    transform: scale(1.02);
+}
+
+.btn-outline {
+    background-color: var(--bg-input);
+    color: var(--text-main);
+}
+
+.btn-outline:hover {
+    background-color: #38383a;
+}
+
+.btn-secondary {
+    background-color: var(--secondary);
+    color: #000000;
+}
+
+.btn-secondary:hover {
+    opacity: 0.9;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+/* === DASHBOARD HERO === */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+}
+
+.hero-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--accent);
+    color: #000000;
+    border: none;
+    border-radius: var(--radius-lg);
+}
+
+.hero-text h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+}
+
+.hero-text p {
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 1.1rem;
+    max-width: 400px;
+    font-weight: 600;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 12px;
+}
+
+.stat-card {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.flash-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.flash {
+    padding: 16px 20px;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    border-left: 4px solid;
+    background: var(--bg-card);
+}
+
+/* 1. SUCCESS (Zelená) */
+.flash-success {
+    border-color: #10b981;
+    color: #34d399;
+    background-color: rgba(16, 185, 129, 0.08);
+}
+
+/* 2. ERROR (Červená) */
+.flash-error {
+    border-color: #ef4444;
+    color: #f87171;
+    background-color: rgba(239, 68, 68, 0.08);
+}
+
+/* 3. WARNING (Žlutá/Oranžová) - pro login_manager */
+.flash-warning {
+    border-color: #f59e0b;
+    color: #fbbf24;
+    background-color: rgba(245, 158, 11, 0.08);
+}
+
+/* 4. INFO (Modrá) - pro odhlášení */
+.flash-info {
+    border-color: #3b82f6;
+    color: #60a5fa;
+    background-color: rgba(59, 130, 246, 0.08);
+}
+
+/* === FORMS === */
+.form-input {
+    width: 100%;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-main);
+    padding: 16px;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.form-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.form-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+.form-label {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Obal pro jeden řádek formuláře (label + input) */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Dropdown select - stejný styl jako input */
+.form-select {
+    width: 100%;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-main);
+    padding: 16px;
+    padding-right: 40px;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+}
+
+.form-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.form-select option {
+    background-color: var(--bg-card);
+    color: var(--text-main);
+}
+
+/* Textarea */
+.form-textarea {
+    width: 100%;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-main);
+    padding: 16px;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s;
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+/* Inline chybová hláška uvnitř formuláře (odlišné od flash zpráv) */
+.alert {
+    padding: 14px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-left: 4px solid;
+    margin-bottom: 8px;
+}
+
+.alert-error {
+    background-color: rgba(239, 68, 68, 0.08);
+    border-color: #ef4444;
+    color: #f87171;
+}
+
+.alert-success {
+    background-color: rgba(16, 185, 129, 0.08);
+    border-color: #10b981;
+    color: #34d399;
+}
+
+/* === AUTHENTICATION (Login / Register) === */
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Odečteme výšku hlavičky a padding, aby to bylo vertikálně na středu */
+    min-height: calc(100vh - var(--header-h) - 80px);
+}
+
+.auth-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    width: 100%;
+    max-width: 420px;
+    /* Toto zabrání roztažení! */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    /* Lehký stín pro hloubku */
+}
+
+.auth-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 24px;
+    text-align: center;
+    color: var(--text-main);
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.auth-switch {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.auth-switch a {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.auth-switch a:hover {
+    color: var(--accent-hover);
+    text-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* === EXERCISES PAGE (Tabs & Grid) === */
+
+/* Schování obou tabů ve výchozím stavu */
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Zobrazení prvního tabu automaticky, nebo toho, který je v URL (#moje-cviky / #moje-sablony) */
+.tab-content:target,
+#vse:target~#vse,
+#moje-cviky:target,
+#moje-sablony:target,
+#komunita:target {
+    display: block;
+}
+
+/* Fallback: Pokud v URL není žádný hash, zobrazí se první tab */
+.tab-content:last-child {
+    display: none;
+}
+
+.tab-content:first-child {
+    display: block;
+}
+
+#moje-cviky:target~.tab-content:first-child,
+#moje-sablony:target~.tab-content:first-child,
+#komunita:target~.tab-content:first-child {
+    display: none;
+}
+
+/* Stylování navigačních odkazů */
+.tabs-nav {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+}
+
+.tab-link {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+}
+
+.tab-link:hover {
+    color: var(--text-main);
+    background: var(--bg-input);
+}
+
+/* Grid pro kartičky cviků */
+.exercises-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.exercise-card {
+    padding: 24px;
+}
+
+/* Badges (Štítky na svaly a náčiní) */
+.exercise-tags {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.badge {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    border-radius: var(--radius-pill);
+    letter-spacing: 0.5px;
+}
+
+.badge-purple,
+.badge-lavender {
+    background-color: var(--secondary);
+    color: #000000;
+    border: none;
+}
+
+.badge-lime {
+    background-color: var(--accent);
+    color: #000000;
+    border: none;
+}
+
+.badge-gray {
+    background-color: var(--bg-input);
+    color: var(--text-muted);
+    border: none;
+}
+
+/* Drobná úprava pro <select> elementy v temném režimu */
+select.form-input {
+    appearance: none;
+    cursor: pointer;
+}
+
+select.form-input option {
+    background-color: var(--bg-card);
+    color: var(--text-main);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* === TOGGLE FORMULÁŘE PRO CVIKY (Checkbox Hack) === */
+
+/* Ve výchozím stavu je formulář schovaný */
+#novy-cvik {
+    display: none;
+}
+
+/* Když se zaškrtne skrytý checkbox, zobraz formulář */
+#toggle-new-exercise:checked~.tabs-container #novy-cvik {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Chytrý trik: Pokud uživatel klikne na "Přidat cvik" z jiného tabu, 
+   automaticky ho přepneme do tabu "Moje cviky" */
+#toggle-new-exercise:checked~.tabs-container #moje-cviky {
+    display: block !important;
+}
+
+#toggle-new-exercise:checked~.tabs-container #vse {
+    display: none !important;
+}
+
+/* === TLAČÍTKO PRO SMAZÁNÍ (Křížek na kartě) === */
+.btn-delete {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    opacity: 0.6;
+}
+
+.exercise-card:hover .btn-delete {
+    opacity: 1;
+    /* Křížek bude výraznější, když uživatel najede na kartu cviku */
+}
+
+.btn-delete:hover {
+    color: #ef4444;
+    /* Červená barva (Error) při najetí přímo na křížek */
+    background-color: rgba(239, 68, 68, 0.1);
+    /* Jemné červené pozadí */
+    transform: scale(1.1);
+}
+
+/* === CUSTOM CHECKBOX CARDS (Pro výběr cviků v šablonách) === */
+.custom-checkbox-card {
+    cursor: pointer;
+    display: block;
+}
+
+/* Skryjeme původní hnusný systémový checkbox */
+.custom-checkbox-card input[type="checkbox"] {
+    display: none;
+}
+
+/* Jak vypadá nezaškrtnutý cvik */
+.custom-checkbox-card .checkbox-content {
+    background-color: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.custom-checkbox-card:hover .checkbox-content {
+    border-color: var(--border-light);
+}
+
+/* KOUZLO: Když je checkbox zaškrtnutý, podbarvíme jeho "sourozence" (.checkbox-content) fialově! */
+.custom-checkbox-card input[type="checkbox"]:checked+.checkbox-content {
+    background-color: var(--accent-glow);
+    border-color: var(--accent);
+}
+
+.custom-checkbox-card input[type="checkbox"]:checked+.checkbox-content strong {
+    color: var(--accent);
+}
+
+/* Vlastní temný scrollbar pro seznam cviků (aby to vypadalo prémiově) */
+.exercises-selection::-webkit-scrollbar {
+    width: 6px;
+}
+
+.exercises-selection::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.exercises-selection::-webkit-scrollbar-thumb {
+    background: var(--border-light);
+    border-radius: 10px;
+}
+
+.exercises-selection::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* === TOGGLE FORMULÁŘE PRO ŠABLONY (Dynamický Grid) === */
+
+/* Výchozí stav: Jeden sloupec, okno je skryté */
+.sablony-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    align-items: start;
+    max-width: 800px;
+}
+
+#nova-sablona-card {
+    display: none;
+}
+
+/* Stav, kdy klikneme na "Vytvořit" */
+#toggle-new-template:checked~.sablony-layout {
+    grid-template-columns: 3fr 2fr;
+    /* Rozdělí obrazovku na 2 sloupce */
+    max-width: none;
+    /* Odstraní limit šířky, ať to zaplní prostor */
+}
+
+/* Zobrazí samotnou kartu formuláře a přidá plynulé zobrazení */
+#toggle-new-template:checked~.sablony-layout #nova-sablona-card {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}

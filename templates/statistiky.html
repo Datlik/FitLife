@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Statistiky – FitLife{% endblock %}
+{% block page_title %}Tvé statistiky{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 24px; border-color: var(--accent);">
+    <h3 style="margin-bottom: 16px;">Vyber cvik k analýze</h3>
+    
+    <form action="{{ url_for('statistiky.index') }}" method="GET" style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+        <div class="form-group" style="flex: 1; min-width: 250px;">
+            <select name="exercise" class="form-input" required>
+                <option value="" disabled {% if not selected_ex %}selected{% endif %}>Zvol cvik, který jsi už cvičil...</option>
+                {% for ex in exercises %}
+                    <option value="{{ ex.id }}" {% if selected_ex and selected_ex.id == ex.id %}selected{% endif %}>
+                        {{ ex.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Zobrazit graf</button>
+    </form>
+</div>
+
+{% if selected_ex %}
+    <div class="card" style="margin-bottom: 32px; text-align: center; overflow-x: auto;">
+        {% if plot_url %}
+            <img src="data:image/png;base64,{{ plot_url }}" alt="Graf progrese" style="max-width: 100%; height: auto; border-radius: var(--radius-sm);">
+        {% else %}
+            <p class="text-muted" style="padding: 40px;">Pro tento cvik není dostatek dat k vykreslení grafu.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h3 style="color: var(--accent); margin-bottom: 16px;">Tvé maximální výsledky (Maximální váha)</h3>
+        {% if pr_sets %}
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                    <thead>
+                        <tr style="color: var(--text-muted); font-size: 0.85rem; border-bottom: 1px solid var(--border);">
+                            <th style="padding: 12px 8px;">Datum</th>
+                            <th style="padding: 12px 8px;">Váha</th>
+                            <th style="padding: 12px 8px;">Opakování</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in pr_sets %}
+                        <tr class="{% if loop.index % 2 == 0 %}row-even{% endif %}" style="border-bottom: 1px solid var(--border-light);">
+                            <td style="padding: 12px 8px; color: var(--text-main);">{{ s.workout.end_time.strftime('%d. %m. %Y') }}</td>
+                            <td style="padding: 12px 8px; font-weight: bold; color: #10b981; font-size: 1.1rem;">{{ s.weight }} kg</td>
+                            <td style="padding: 12px 8px; font-size: 1.1rem;">{{ s.reps }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted" style="padding: 20px 0;">Zatím zde nemáš žádné sady pro tento cvik v historii.</p>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

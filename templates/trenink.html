@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Trénink – FitLife{% endblock %}
+{% block page_title %}Aktivní trénink{% endblock %}
+
+{% block content %}
+{% if not workout %}
+    <div class="card" style="text-align: center; padding: 60px 20px; border-color: var(--accent);">
+        <h2 style="font-size: 2rem; margin-bottom: 8px;">Začni nový trénink</h2>
+        <p class="text-muted" style="margin-bottom: 32px;">Vyber si šablonu nebo začni s prázdným plánem a přidávej cviky za pochodu.</p>
+        
+        <form action="{{ url_for('trenink.start') }}" method="POST" style="margin-bottom: 40px;">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-primary" style="font-size: 1.2rem; padding: 16px 40px; border-radius: var(--radius-lg);">
+                Začít prázdný trénink
+            </button>
+        </form>
+
+        {% if templates %}
+            <h3 style="text-align: left; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 24px; color: var(--text-main);">Nebo použij uloženou šablonu:</h3>
+            <div class="exercises-grid">
+            {% for tpl in templates %}
+                <div class="card card-interactive">
+                    <h4 class="card-title">{{ tpl.name }}</h4>
+                    <div style="margin: 12px 0; display: flex; flex-wrap: wrap; gap: 6px;">
+                        {% for ex in tpl.exercises %}
+                            <span class="badge badge-gray" style="font-size: 0.7rem;">{{ ex.name }}</span>
+                        {% endfor %}
+                    </div>
+                    <form action="{{ url_for('trenink.start', template_id=tpl.id) }}" method="POST" style="margin-top: 20px;">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-outline btn-full">Spustit tento plán</button>
+                    </form>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+{% else %}
+    <div class="card" style="border-color: var(--accent); margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; background-color: rgba(139, 92, 246, 0.05);">
+        <div>
+            <h2 style="color: var(--accent); margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+                <span style="display: inline-block; width: 12px; height: 12px; background-color: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981;"></span>
+                Trénink probíhá
+            </h2>
+            <span class="text-muted">Čas startu: {{ workout.start_time.strftime('%H:%M') }}</span>
+        </div>
+        <form action="{{ url_for('trenink.dokoncit') }}" method="POST">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-primary">Dokončit a uložit</button>
+        </form>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 24px; margin-bottom: 40px;">
+        {% for ex, sets in exercises_in_workout.items() %}
+            <div id="cvik-{{ ex.id }}" class="card" style="scroll-margin-top: 100px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 16px;">
+                    <h3 style="color: var(--text-main); font-size: 1.4rem;">{{ ex.name }}</h3>
+                    <div class="exercise-tags">
+                        <span class="badge badge-purple">{{ ex.primary_muscle }}</span>
+                    </div>
+                </div>
+                
+                {% if sets %}
+                    <div style="margin-bottom: 16px; overflow-x: auto;">
+                        <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                            <thead>
+                                <tr style="color: var(--text-muted); font-size: 0.85rem; border-bottom: 1px solid var(--border);">
+                                    <th style="padding: 12px 8px;">Série</th>
+                                    <th style="padding: 12px 8px;">Váha</th>
+                                    <th style="padding: 12px 8px;">Opakování</th>
+                                    <th style="padding: 12px 8px;">Intenzita</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for s in sets %}
+                                <tr style="border-bottom: 1px solid var(--border-light); background-color: {% if loop.index % 2 == 0 %}var(--bg-card){% else %}transparent{% endif %};">
+                                    <td style="padding: 12px 8px; font-weight: bold; color: var(--accent);">{{ loop.index }}.</td>
+                                    <td style="padding: 12px 8px; font-size: 1.1rem;">{{ s.weight }} kg</td>
+                                    <td style="padding: 12px 8px; font-size: 1.1rem;">{{ s.reps }}</td>
+                                    <td style="padding: 12px 8px;">
+                                        <span class="badge badge-gray">Úroveň {{ s.intensity }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted" style="margin-bottom: 16px;">Zatím žádné zapsané série pro tento cvik.</p>
+                {% endif %}
+
+                <form action="{{ url_for('trenink.pridat_serii') }}" method="POST" style="background: var(--bg-input); padding: 16px; border-radius: var(--radius-sm); display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="exercise_id" value="{{ ex.id }}">
+                    
+                    <div class="form-group" style="flex: 1; min-width: 90px;">
+                        <label class="form-label" style="font-size: 0.8rem;">Váha (kg)</label>
+                        <input type="number" name="weight" step="0.5" min="0" class="form-input" required placeholder="0.0">
+                    </div>
+                    
+                    <div class="form-group" style="flex: 1; min-width: 90px;">
+                        <label class="form-label" style="font-size: 0.8rem;">Opakování</label>
+                        <input type="number" name="reps" min="0" class="form-input" required placeholder="0">
+                    </div>
+                    
+                    <div class="form-group" style="flex: 2; min-width: 140px;">
+                        <label class="form-label" style="font-size: 0.8rem;">Intenzita (RPE)</label>
+                        <select name="intensity" class="form-input" required>
+                            <option value="1">1: Rozcvička</option>
+                            <option value="2">2: Technika</option>
+                            <option value="3">3: Lehké</option>
+                            <option value="4">4: Snadné</option>
+                            <option value="5" selected>5: Střední</option>
+                            <option value="6">6: Těžké</option>
+                            <option value="7">7: Selhání</option>
+                            <option value="8">8: Osobní rekord</option>
+                            <option value="9">9: Dropset</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="padding: 12px 24px; font-weight: bold; font-size: 1.2rem;" title="Přidat sérii">+</button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="card" style="border-style: dashed; border-color: var(--border); background: transparent;">
+        <h4 style="margin-bottom: 16px; color: var(--text-muted);">Přidat další cvik do tréninku</h4>
+        <form action="{{ url_for('trenink.pridat_cvik') }}" method="POST" style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+            <div class="form-group" style="flex: 1; min-width: 250px;">
+                <select name="exercise_id" class="form-input" required>
+                    <option value="" disabled selected>Vyber cvik ze seznamu...</option>
+                    {% for ex in all_exercises %}
+                        <option value="{{ ex.id }}">{{ ex.name }} ({{ ex.primary_muscle }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-outline">Přidat blok cviku</button>
+        </form>
+    </div>
+{% endif %}
+{% endblock %}

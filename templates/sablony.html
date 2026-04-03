@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Šablony – FitLife{% endblock %}
+{% block page_title %}Tréninkové šablony{% endblock %}
+
+{% block topbar_actions %}
+    <label for="toggle-new-template" class="btn btn-primary" style="cursor: pointer;">
+        Vytvořit novou šablonu
+    </label>
+{% endblock %}
+
+{% block content %}
+<input type="checkbox" id="toggle-new-template" style="display: none;">
+
+<div class="sablony-layout">
+
+    <div class="sablony-list">
+        <div class="tabs-container" style="margin-top: 0;">
+            <div class="tabs-nav" style="margin-bottom: 24px;">
+                <a href="#vse" class="tab-link">Šablony</a>
+                <a href="#moje-sablony" class="tab-link">Moje šablony</a>
+                <a href="#komunita" class="tab-link">Komunita</a>
+            </div>
+
+            <!-- TAB 1: Globální šablony -->
+            <div id="vse" class="tab-content">
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    {% for tpl in predefined %}
+                        <div class="card card-interactive">
+                            <h4 class="card-title">{{ tpl.name }}</h4>
+
+                            <div style="margin: 16px 0; display: flex; flex-wrap: wrap; gap: 8px;">
+                                {% for ex in tpl.exercises %}
+                                    <span class="badge badge-gray">{{ ex.name }}</span>
+                                {% endfor %}
+                            </div>
+
+                            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                                <form action="/trenink/start/{{ tpl.id }}" method="POST" style="flex: 1;">
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-primary btn-full">Spustit trénink</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card" style="text-align: center; padding: 40px; border-style: dashed;">
+                            <p class="text-muted">Zatím zde nejsou žádné globální šablony.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- TAB 2: Uživatelské šablony -->
+            <div id="moje-sablony" class="tab-content">
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    {% for tpl in my_templates %}
+                        <div class="card card-interactive">
+                            <h4 class="card-title">{{ tpl.name }}</h4>
+
+                            <div style="margin: 16px 0; display: flex; flex-wrap: wrap; gap: 8px;">
+                                {% for ex in tpl.exercises %}
+                                    <span class="badge badge-gray">{{ ex.name }}</span>
+                                {% endfor %}
+                            </div>
+
+                            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                                <form action="/trenink/start/{{ tpl.id }}" method="POST" style="flex: 1;">
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-primary btn-full">Spustit trénink</button>
+                                </form>
+
+                                <form action="{{ url_for('sablony.smazat', template_id=tpl.id) }}" method="POST">
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-outline" style="border-color: #ef4444; color: #ef4444;" title="Smazat šablonu">✕</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card" style="text-align: center; padding: 40px; border-style: dashed;">
+                            <p class="text-muted">Zatím nemáš žádné vlastní šablony. Vytvoř si první vpravo!</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- TAB 3: Komunitní šablony -->
+            <div id="komunita" class="tab-content">
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    {% for tpl in community_templates %}
+                        <div class="card card-interactive">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <h4 class="card-title">{{ tpl.name }}</h4>
+                                <span class="badge badge-purple" style="font-size: 0.75rem;">Od: {{ tpl.owner.email.split('@')[0] }}</span>
+                            </div>
+
+                            <div style="margin: 16px 0; display: flex; flex-wrap: wrap; gap: 8px;">
+                                {% for ex in tpl.exercises %}
+                                    <span class="badge badge-gray">{{ ex.name }}</span>
+                                {% endfor %}
+                            </div>
+
+                            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                                <form action="{{ url_for('sablony.kopirovat', template_id=tpl.id) }}" method="POST" style="flex: 1;">
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-primary btn-full">Uložit do mých šablon</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card" style="text-align: center; padding: 40px; border-style: dashed;">
+                            <p class="text-muted">Komunita zatím žádné šablony nesdílí. Buď první!</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="nova-sablona-card" class="card" style="position: sticky; top: calc(var(--header-h) + 20px); border-color: var(--accent);">
+        <h3 class="card-title" style="margin-bottom: 24px;">Vytvořit novou šablonu</h3>
+
+        <form method="POST" action="{{ url_for('sablony.index') }}">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="name" class="form-label">Název plánu</label>
+                <input type="text" id="name" name="name" class="form-input" required placeholder="Např. Push den (Hrudník, Triceps)">
+            </div>
+
+            <label class="form-label" style="margin-bottom: 12px; display: block;">Vyber cviky do šablony</label>
+            
+            <div class="exercises-selection" style="max-height: 40vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 8px; margin-bottom: 24px;">
+                {% for ex in exercises %}
+                    <label class="custom-checkbox-card">
+                        <input type="checkbox" name="exercises" value="{{ ex.id }}">
+                        <div class="checkbox-content">
+                            <strong>{{ ex.name }}</strong>
+                            <span class="text-muted" style="font-size: 0.8rem;">{{ ex.primary_muscle }}</span>
+                        </div>
+                    </label>
+                {% endfor %}
+            </div>
+
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 14px; padding: 16px; background: rgba(139, 92, 246, 0.03); border: 1px solid var(--border); border-radius: var(--radius-sm); transition: all 0.2s;" onmouseover="this.style.borderColor='var(--accent)';" onmouseout="this.style.borderColor='var(--border)';">
+                    <input type="checkbox" name="is_public" style="width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;">
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-weight: 700; font-size: 0.95rem; color: var(--text-main);">Zveřejnit v komunitě</span>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Tento plán uvidí i ostatní uživatelé</span>
+                    </div>
+                </label>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <label for="toggle-new-template" class="btn btn-outline" style="cursor: pointer;">Zrušit</label>
+                <button type="submit" class="btn btn-primary">Uložit šablonu</button>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
