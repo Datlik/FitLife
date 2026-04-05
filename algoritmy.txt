@@ -1,0 +1,147 @@
+Seznam použitých algoritmů a knihoven
+=====================================
+
+
+1. ALGORITMY
+=============
+
+
+1.1 Hashování hesel (PBKDF2-SHA256)
+------------------------------------
+Při registraci se heslo nikdy neukládá jako čistý text.
+Místo toho se pomocí knihovny Werkzeug vygeneruje jednosměrný hash.
+
+Pseudokód:
+    REGISTRACE:
+        1. Uživatel zadá heslo v plain textu
+        2. Zavolej generate_password_hash(heslo)
+           - vygeneruje náhodnou "sůl" (salt)
+           - aplikuje PBKDF2 s SHA-256 (600 000 iterací)
+           - výsledek = "metoda$salt$hash"
+        3. Ulož výsledný řetězec do sloupce password_hash v databázi
+
+    PŘIHLÁŠENÍ:
+        1. Uživatel zadá heslo
+        2. Zavolej check_password_hash(uložený_hash, zadané_heslo)
+           - extrahuj sůl z uloženého hashe
+           - aplikuj stejný algoritmus na zadané heslo se stejnou solí
+           - porovnej výsledek s uloženým hashem
+        3. Pokud se shodují → přihlášení úspěšné
+        4. Pokud ne → chyba "Nesprávné heslo"
+
+
+1.2 Výpočet streaku (týdenní série)
+------------------------------------
+Algoritmus počítá, kolik po sobě jdoucích týdnů uživatel cvičil.
+
+Pseudokód:
+    1. Načti všechny dokončené tréninky uživatele
+    2. Pro každý trénink zjisti dvojici (rok, číslo_týdne)
+    3. Odstraň duplicity a seřaď sestupně (od nejnovějšího)
+    4. Ověř, zda nejnovější týden je aktuální nebo předchozí týden
+       - Pokud ne → streak = 0, konec
+    5. Nastav streak = 1, projdi zbývající týdny:
+       - Pokud je týden přesně o 1 menší než předchozí → streak += 1
+       - Pokud ne → přeruš cyklus
+    6. Vrať streak
+
+
+1.3 Výpočet celkového objemu tréninku (Tonnage)
+-------------------------------------------------
+Po dokončení tréninku se spočítá celkový objem zvednuté váhy.
+
+Pseudokód:
+    1. Načti všechny série v tréninku
+    2. total_volume = 0
+    3. Pro každou sérii:
+       - total_volume += série.opakování * série.váha
+    4. Ulož total_volume do záznamu tréninku
+
+Příklad: 3 série bench pressu (10x80kg, 8x90kg, 6x100kg)
+         = (10*80) + (8*90) + (6*100) = 800 + 720 + 600 = 2120 kg
+
+
+1.4 Generování grafu progrese (Matplotlib)
+--------------------------------------------
+Graf zobrazuje vývoj maximální zvednuté váhy u vybraného cviku v čase.
+
+Pseudokód:
+    1. Načti všechny série daného cviku z dokončených tréninků
+    2. Seskup série podle data (den)
+    3. Pro každý den najdi maximální váhu:
+       - max_weights = {}
+       - Pro každou sérii:
+           - den = série.datum ve formátu "DD.MM.YYYY"
+           - Pokud den není v max_weights NEBO série.váha > max_weights[den]:
+               - max_weights[den] = série.váha
+    4. Vykresli graf: osa X = dny, osa Y = max. váhy
+    5. Ulož graf do paměti jako PNG obrázek (BytesIO)
+    6. Převeď PNG na base64 řetězec
+    7. Pošli base64 řetězec do HTML šablony jako <img src="data:image/png;base64,...">
+
+
+1.5 Soft-delete cviků
+-----------------------
+Při smazání cviku se neodstraní z databáze, aby zůstal v historii tréninků.
+
+Pseudokód:
+    1. Najdi cvik podle ID
+    2. Ověř, že cvik patří aktuálnímu uživateli
+    3. Najdi všechny šablony obsahující tento cvik (M:N vazba)
+    4. Pro každou šablonu: odeber cvik z její kolekce exercises
+    5. Nastav cvik.is_deleted = True
+    6. Ulož změny (commit)
+    → Cvik se přestane zobrazovat v katalozích, ale zůstane v historii
+
+
+1.6 CSRF ochrana formulářů
+----------------------------
+Každý POST formulář obsahuje skrytý token proti Cross-Site Request Forgery útokům.
+
+Pseudokód:
+    GENEROVÁNÍ TOKENU:
+        1. Pokud v session neexistuje "_csrf_token":
+           - Vygeneruj náhodný 32-bytový hex řetězec
+           - Ulož ho do session["_csrf_token"]
+        2. Vrať token (pro vložení do formuláře jako hidden input)
+
+    OVĚŘENÍ TOKENU:
+        1. Při zpracování POST požadavku:
+           - Přečti token z formuláře (request.form["_csrf_token"])
+           - Porovnej s tokenem v session
+           - Pokud se neshodují → odmítni požadavek
+
+
+1.7 Heatmapa aktivity (kalendář posledních 7 dnů)
+---------------------------------------------------
+Zobrazuje, ve kterých dnech uživatel cvičil.
+
+Pseudokód:
+    1. Zjisti dnešní datum
+    2. Načti všechny dokončené tréninky za posledních 7 dní
+    3. Vytvoř množinu aktivních dnů (set datumů)
+    4. Pro i od 6 do 0 (pozpátku):
+       - den = dnes - i dní
+       - Přidej do pole: {název_dne, active: den v množině aktivních}
+    5. Pošli pole do šablony pro vykreslení boxíků
+
+
+
+2. KNIHOVNY
+============
+
+2.1 Web (Flask aplikace):
+    - Flask              – webový framework pro routing a zpracování HTTP požadavků
+    - Flask-SQLAlchemy   – ORM nadstavba pro práci s databází bez psaní SQL
+    - Flask-Login        – správa přihlášení, session a ochrany route pomocí @login_required
+    - Werkzeug           – hashování hesel (generate_password_hash, check_password_hash)
+    - PyMySQL            – databázový driver pro připojení k MySQL serveru
+    - Matplotlib         – generování grafů progrese na serveru (headless režim)
+    - Jinja2             – šablonovací engine pro HTML (součást Flasku)
+
+2.2 Administrátorská aplikace (Desktop):
+    - PyQt5                  – GUI framework pro tvorbu oken, formulářů a tabulek
+    - mysql-connector-python – přímé SQL dotazy do MySQL bez ORM
+
+2.3 Testování:
+    - pytest             – framework pro automatické testování (6 testů)

@@ -22,10 +22,13 @@ def inject_sidebar_data():
     if not current_user.is_authenticated:
         return dict(csrf_token=generate_csrf_token)
     
-    from datetime import datetime, timedelta
+    from datetime import datetime, timedelta, timezone
+    
+    def utcnow():
+        return datetime.now(timezone.utc).replace(tzinfo=None)
     
     # 1. Tréninky za poslední týden
-    seven_days_ago = datetime.utcnow() - timedelta(days=7)
+    seven_days_ago = utcnow() - timedelta(days=7)
     weekly_workouts = WorkoutHistory.query.filter(
         WorkoutHistory.user_id == current_user.id,
         WorkoutHistory.status == 'finished',
@@ -52,7 +55,7 @@ def inject_sidebar_data():
     
     workout_streak = 0
     if all_finished:
-        now = datetime.utcnow()
+        now = utcnow()
         current_year, current_week, _ = now.isocalendar()
         
         # Unikátní týdny cvičení (rok, týden)
@@ -92,7 +95,7 @@ def inject_sidebar_data():
 
     def get_icon(filename):
         import os
-        filepath = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'icons', filename)
+        filepath = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'icons', filename)
         if os.path.exists(filepath):
             try:
                 with open(filepath, 'r', encoding='utf-8') as f:
@@ -103,13 +106,13 @@ def inject_sidebar_data():
 
     # 5. Boxíkový kalendář aktivity (Heatmap)
     heatmap_data = []
-    today = datetime.utcnow().date()
+    today = utcnow().date()
     
     # Najít všechny dokončené tréninky za posledních 7 dní (bez limitu)
     seven_days_workouts = WorkoutHistory.query.filter(
         WorkoutHistory.user_id == current_user.id,
         WorkoutHistory.status == 'finished',
-        WorkoutHistory.end_time >= datetime.utcnow() - timedelta(days=7)
+        WorkoutHistory.end_time >= utcnow() - timedelta(days=7)
     ).all()
     
     active_dates = set([w.end_time.date() for w in seven_days_workouts if w.end_time])

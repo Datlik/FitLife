@@ -1,0 +1,8 @@
+Flask
+flask-sqlalchemy
+flask-login
+pymysql
+matplotlib
+pyqt5
+mysql-connector-python
+pytest
