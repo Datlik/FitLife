@@ -5,7 +5,7 @@ import io
 import base64
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
-from models import db, WorkoutSet, WorkoutHistory, Exercise
+from app.models import db, WorkoutSet, WorkoutHistory, Exercise
 
 statistiky_bp = Blueprint("statistiky", __name__)
 

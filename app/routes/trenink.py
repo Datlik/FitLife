@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from flask_login import login_required, current_user
-from models import db, WorkoutHistory, WorkoutSet, WorkoutTemplate, Exercise
+from app.models import db, WorkoutHistory, WorkoutSet, WorkoutTemplate, Exercise
 from datetime import datetime
 
 trenink_bp = Blueprint("trenink", __name__)

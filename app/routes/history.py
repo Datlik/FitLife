@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from flask_login import login_required, current_user
-from models import db, WorkoutHistory, WorkoutSet
+from app.models import db, WorkoutHistory, WorkoutSet
 
 historie_bp = Blueprint("historie", __name__)
 

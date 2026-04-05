@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from models import db, Exercise
-from models import db, Exercise, WorkoutSet, WorkoutTemplate
+from app.models import db, Exercise
+from app.models import db, Exercise, WorkoutSet, WorkoutTemplate
 
 exercises_bp = Blueprint("exercises", __name__)
 

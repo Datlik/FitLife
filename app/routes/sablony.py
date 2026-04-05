@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from flask_login import login_required, current_user
 from sqlalchemy import or_
-from models import db, WorkoutTemplate, Exercise
+from app.models import db, WorkoutTemplate, Exercise
 
 sablony_bp = Blueprint("sablony", __name__)
 

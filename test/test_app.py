@@ -1,6 +1,6 @@
 import pytest
 from app import create_app
-from models import db, User, Exercise
+from app.models import db, User, Exercise
 
 # ==========================================
 # 1. FIXTURES (Příprava testovacího prostředí)

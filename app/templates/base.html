@@ -12,7 +12,7 @@
         <div class="brand">Fit<span class="accent">Life</span></div>
         
         <nav class="nav-menu">
-            <a href="{{ url_for('index') }}" class="nav-item {% if request.endpoint == 'index' %}active{% endif %}">
+            <a href="{{ url_for('main.index') }}" class="nav-item {% if request.endpoint == 'main.index' %}active{% endif %}">
                 Domů
             </a>
             {% if current_user.is_authenticated %}

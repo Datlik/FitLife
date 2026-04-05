@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 from flask_login import login_user, logout_user, login_required, current_user
-from models import db, User, Exercise, WorkoutTemplate, WorkoutHistory, WorkoutSet
+from app.models import db, User, Exercise, WorkoutTemplate, WorkoutHistory, WorkoutSet
 import secrets
 
 auth_bp = Blueprint("auth", __name__)
@@ -138,7 +138,7 @@ def inject_sidebar_data():
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for("index"))
+        return redirect(url_for("main.index"))
 
     error = None
 
@@ -166,7 +166,7 @@ def register():
                 db.session.commit()
                 login_user(user)
                 flash("Registrace proběhla úspěšně!", "success")
-                return redirect(url_for("index"))
+                return redirect(url_for("main.index"))
 
     return render_template("auth/register.html", error=error)
 
@@ -174,7 +174,7 @@ def register():
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for("index"))
+        return redirect(url_for("main.index"))
 
     error = None
 
@@ -192,7 +192,7 @@ def login():
                 login_user(user)
                 flash("Přihlášení proběhlo úspěšně.", "success")
                 next_page = request.args.get("next")
-                return redirect(next_page or url_for("index"))
+                return redirect(next_page or url_for("main.index"))
 
     return render_template("auth/login.html", error=error)
 
@@ -202,7 +202,7 @@ def login():
 def delete_account():
     if not validate_csrf(request.form.get("_csrf_token")):
         flash("Neplatný CSRF token.", "error")
-        return redirect(url_for("index"))
+        return redirect(url_for("main.index"))
 
     user = User.query.get(current_user.id)
 
@@ -228,7 +228,7 @@ def delete_account():
     db.session.commit()
 
     flash("Účet a všechna související data byla úspěšně smazána.", "info")
-    return redirect(url_for("index"))
+    return redirect(url_for("main.index"))
 
 
 @auth_bp.route("/logout")
@@ -236,4 +236,4 @@ def delete_account():
 def logout():
     logout_user()
     flash("Byl jsi odhlášen.", "info")
-    return redirect(url_for("index"))
+    return redirect(url_for("main.index"))
