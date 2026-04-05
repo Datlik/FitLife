@@ -2,18 +2,17 @@ import pytest
 from app import create_app
 from app.models import db, User, Exercise
 
-# ==========================================
+
 # 1. FIXTURES (Příprava testovacího prostředí)
-# ==========================================
 
 @pytest.fixture
 def app():
     """Vytvoří a nakonfiguruje instanci aplikace pro testování."""
     
-    # Připravíme si konfiguraci PŘED vytvořením aplikace
+    # konfiguraci PŘED vytvořením aplikace
     test_config = {
         "TESTING": True,
-        # Použijeme SQLite databázi čistě v paměti RAM
+        # SQLite databáze čistě v paměti RAM
         "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
         "WTF_CSRF_ENABLED": False, 
         "SECRET_KEY": "test_secret_key"
@@ -52,9 +51,8 @@ def test_user(app):
         db.session.commit()
         return user
 
-# ==========================================
+
 # 2. TESTY MODELŮ (Databázová vrstva)
-# ==========================================
 
 def test_user_password_hashing(app):
     """Testuje, zda se heslo správně zahasuje a ověří."""
@@ -85,9 +83,9 @@ def test_create_exercise(app, test_user):
         assert saved_ex is not None
         assert saved_ex.user_id == user.id
 
-# ==========================================
+
 # 3. TESTY ROUT (Logika aplikace a uživatelské akce)
-# ==========================================
+
 
 def test_homepage_redirects_unauthenticated(client):
     """Základní test, zda funguje hlavní stránka (i bez přihlášení)."""
@@ -120,10 +118,9 @@ def test_user_login(client, test_user, csrf_token):
     }, follow_redirects=True)
     
     assert response_good.status_code == 200
-    # Pokud bys měl v šabloně text "Přihlášení proběhlo úspěšně.", mohl bys to testovat i přes assert b'uspesne' in response_good.data
+
 
 def test_protected_route_requires_login(client):
     """Testuje, že nepřihlášený uživatel se nedostane na cvičení."""
     response = client.get("/cviky", follow_redirects=True)
-    # Aplikace by ho měla přesměrovat na přihlášení
     assert b'Pro p\xc5\x99\xc3\xadstup se mus\xc3\xad\xc5\xa1 p\xc5\x99ihl\xc3\xa1sit.' in response.data

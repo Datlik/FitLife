@@ -1,33 +1,25 @@
-/* =============================================
-   FITLIFE – Premium Desktop Gym App
-   Theme: Pure Dark & Purple
-   ============================================= */
+/* FITLIFE – Premium Desktop Gym App
+   Theme: Pure Dark & Purple*/
 
 :root {
-    /* Colors - Neo Bento Design */
     --bg-app: #111111;
-    /* Temná šedá, nedávat absolutní černou */
     --bg-surface: #111111;
     --bg-card: #1C1C1E;
-    /* Tmavé karty, Bento bloky */
     --bg-input: #2C2C2E;
 
     --border: rgba(255, 255, 255, 0.05);
-    /* Skoro neviditelné ohraničení */
     --border-light: rgba(255, 255, 255, 0.1);
 
     --text-main: #ffffff;
     --text-muted: #8a8a8e;
-    /* Specifická stříbrno-šedá jako u iOS */
+
 
     --accent: #D4F670;
-    /* Neon Limetková */
     --accent-hover: #C6E663;
     --accent-dark: #000000;
-    /* Pro text na limetkových tlačítkách */
+
 
     --secondary: #D7BCFA;
-    /* Levandulová */
 
     /* Layout */
     --header-h: 80px;
@@ -35,7 +27,6 @@
     --sidebar-w: 240px;
     --profile-sidebar-w: 300px;
 
-    /* Shapes - Extrémní Bento křivky */
     --radius-sm: 16px;
     --radius-md: 24px;
     --radius-lg: 32px;
@@ -561,9 +552,9 @@ body.guest-mode .profile-sidebar {
     transition: all 0.2s;
     cursor: pointer;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 16px center;
+    /* Šipka dolů vytvořená čistě pomocí CSS (bez externích zdrojů) */
+    background-image: none;
+    position: relative;
 }
 
 .form-select:focus {

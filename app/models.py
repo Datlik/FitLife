@@ -26,7 +26,7 @@ template_exercises = db.Table(
 
 
 class User(UserMixin, db.Model):
-    """Model uživatele. UserMixin přidává metody potřebné pro Flask-Login (is_authenticated atd.)."""
+    """Model uživatele. UserMixin přidává metody potřebné pro Flask-Login is_authenticated atd"""
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
@@ -53,7 +53,7 @@ class Exercise(db.Model):
     equipment = db.Column(db.String(50))
     primary_muscle = db.Column(db.String(50))
     is_custom = db.Column(db.Boolean, default=False)
-    is_deleted = db.Column(db.Boolean, default=False)  # Soft-delete příznak
+    is_deleted = db.Column(db.Boolean, default=False)  # Soft-delete
 
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
 
